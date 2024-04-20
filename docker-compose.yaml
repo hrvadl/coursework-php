@@ -40,7 +40,7 @@ services:
       [
         "bash",
         "-c",
-        "sleep 10 && mysql --user=root --host=db --port=3306 barbershop_db < /db.sql && exit",
+        "sleep 10 && mysql --user=root --host=db --port=3306 barbershop < /db.sql && exit",
       ]
     depends_on:
       - db
