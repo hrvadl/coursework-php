@@ -1,0 +1,53 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: server
+    container_name: coursework-server
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    networks:
+      - app
+
+  db:
+    image: mysql:latest
+    container_name: coursework-db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - coursework-php-db:/var/lib/mysql
+    networks:
+      - app
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_DATABASE: barbershop
+
+  db_seeder:
+    restart: always
+    container_name: coursework-db-seeder
+    image: mysql:latest
+    volumes:
+      - ./barbershop_db.sql:/db.sql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    networks:
+      - app
+    entrypoint:
+      [
+        "bash",
+        "-c",
+        "sleep 10 && mysql --user=root --host=db --port=3306 barbershop_db < /db.sql && exit",
+      ]
+    depends_on:
+      - db
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  coursework-php-db:
